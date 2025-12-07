@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title><span style="font-weight:bold; color:#ff00ff; position:relative; top:-10px;">Happy Birthday</span>! 🎂</title>
+  <style>
+    /* --- CSS Variables and Global Styles --- */
+    :root{--bg:#0b0b10;--card:#101018;--text:#e6eef8;--muted:#9fb3d6;--accent:#ff6b81;--accent-light:#221218;--shadow:rgba(0,0,0,0.6)}
+    [data-theme='light']{--bg:#fff;--card:#fff;--text:#222;--muted:#666;--accent:#ff6b81;--accent-light:#fff0f3;--shadow:rgba(13,20,30,0.08)}
+    *{box-sizing:border-box}
+    body{font-family:'Inter', sans-serif; margin:0; background:linear-gradient(135deg,#0b0b10 0%,#14121a 40%,#1b1a26 100%); color:var(--text); min-height:100vh; transition:background-color 0.3s, color 0.3s; overflow-x:hidden}
+
+    /* animated star layer */
+    .star-bg{position:fixed;inset:0;pointer-events:none;z-index:-1;background-image:url('https://i.imgur.com/1cWnHhE.png');background-repeat:repeat;opacity:0.35;animation:moveStars 80s linear infinite}
+    @keyframes moveStars{from{transform:translateY(0)}to{transform:translateY(-2000px)}}
+
+    header{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:18px;backdrop-filter: blur(6px); position:sticky; top:0; z-index:10; background:linear-gradient(180deg, #0e0f14cc, #0a0a0d88); box-shadow:0 6px 30px var(--shadow)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#ff8ab4,#ff4d7e);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:24px;box-shadow:0 8px 28px #ff4d7e33}
+    h1{font-size:22px;margin:0}
+    .controls{display:flex;gap:8px;align-items:center}
+
+    main{padding:18px;display:grid;grid-template-columns:1fr 380px;gap:18px; max-width:1400px; margin:0 auto}
+    .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 14px 50px rgba(0,0,0,0.6), 0 0 24px #0008; transition:box-shadow 0.3s, background 0.3s}
+
+    .hero .image, .logo, .thumb:hover, .modal .viewer{box-shadow:0 12px 40px rgba(255,77,126,0.12), 0 6px 18px rgba(0,0,0,0.6)}
+
+    button{background:var(--accent);border:0;color:white;padding:10px 16px;border-radius:12px;cursor:pointer;font-weight:600; transition:background-color 0.2s, opacity 0.2s}
+    button:hover{opacity:0.95}
+    .btn-ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.06); padding:9px 15px; font-weight:500}
+    .btn-ghost:hover{background:transparent; border-color:var(--accent); color:var(--accent)}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input:not([type='file']), textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text); margin-bottom:8px; transition:border-color 0.2s}
+    input:focus, textarea:focus{border-color:var(--accent); outline:none}
+
+    .hero{display:flex;gap:16px;align-items:center}
+    .hero .image{width:140px;height:140px;border-radius:50%;background:linear-gradient(135deg,#ff8ab4,#ff4d7e);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:36px;flex-shrink:0;position:relative;overflow:hidden}
+    .hero .image img{width:100%;height:100%;object-fit:cover;display:block}
+    .hero .image .initial-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:48px;color:rgba(255,255,255,0.95);background:linear-gradient(180deg,rgba(0,0,0,0.25),transparent);}
+
+    .meta p{margin:4px 0;color:var(--muted); font-size:15px}
+    .action-group{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
+
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:12px}
+    .thumb{position:relative;border-radius:12px;overflow:hidden;cursor:pointer;height:140px;background:#171723;display:flex;align-items:center;justify-content:center; transition:transform 0.2s, box-shadow 0.2s}
+    .thumb:hover{transform:scale(1.02); box-shadow:0 18px 40px rgba(255,77,126,0.12)}
+    .thumb img{width:100%;height:100%;object-fit:cover}
+    .thumb .del{position:absolute;right:8px;top:8px;background:rgba(0,0,0,0.6);color:white;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px; z-index:2; border:2px solid rgba(255,255,255,0.06)}
+
+    .quote{padding:12px;border-radius:12px;background:linear-gradient(90deg,#2a1b20,#231521);border:1px solid rgba(255,255,255,0.03); color:var(--text); margin-bottom:8px}
+    .quote small{color:var(--muted)}
+    .quotes-list{display:flex;flex-direction:column}
+    .quote-content{flex:1}
+
+    .timeline{border-left:2px solid rgba(255,255,255,0.02); padding-left:10px; margin-top:10px}
+    .event{display:flex;gap:15px; margin-bottom:15px; position:relative; padding:5px 0}
+    .event::before{content:''; position:absolute; left:-18px; top:10px; width:14px;height:14px; border-radius:50%; background:var(--accent); border:3px solid var(--card)}
+    .event .text-muted{color:var(--muted); font-size:15px}
+
+    .uploader-zone{border:2px dashed rgba(255,255,255,0.04); border-radius:10px; padding:20px; text-align:center; cursor:pointer; margin-top:10px; background:transparent; transition:background 0.2s}
+    .uploader-zone.drag-over{border-color:var(--accent); background:rgba(255,77,126,0.06)}
+    .uploader-zone p{margin:0; font-size:14px; color:var(--muted)}
+
+    .modal{position:fixed;inset:0;background:rgba(3,6,20,0.85);display:none;align-items:center;justify-content:center;padding:18px; z-index:999}
+    .modal.open{display:flex}
+    .modal .viewer{max-width:900px;width:100%;background:var(--card);padding:18px;border-radius:16px; position:relative}
+    .modal img{width:100%;height:70vh;object-fit:contain;border-radius:10px}
+    .row{display:flex;gap:8px;align-items:center}
+    .nav-btn{background:var(--accent); color:white; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; position:absolute; top:50%; transform:translateY(-50%); z-index:100}
+    #prevBtn{left:20px} #nextBtn{right:20px}
+
+    #confettiCanvas{position:fixed;inset:0;pointer-events:none;z-index:10000;display:none}
+
+    footer{padding:18px;text-align:center;color:rgba(255,255,255,0.5)}
+
+    .running-text{overflow:hidden;padding:6px 0;margin-top:12px}
+    .running-text .inner{display:inline-block;white-space:nowrap;animation:marquee 12s linear infinite}
+    @keyframes marquee{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+
+    @media (max-width:1000px){main{grid-template-columns:1fr} aside{order:2} .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));} .thumb{height:100px} .hero{flex-direction:column; text-align:center} .modal img{height:60vh} .nav-btn{top:initial; bottom:10px; transform:translateY(0); position:relative} .modal .viewer{padding:10px} #prevBtn{left:initial} #nextBtn{right:initial}}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+</head>
+<body data-theme="dark">
+  <div class="star-bg" aria-hidden="true"></div>
+  <header>
+    <div class="brand">
+      <div class="logo" id="logoInitial">R</div>
+      <div>
+        <h1 id="pageTitle">Happy Birthday, Rosni 🎂</h1>
+        <div style="font-size:13px;color:var(--muted)">A special gallery & memory page — friendship since 2021</div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="confettiBtn" title="Celebrate">🎉 Celebrate</button>
+      <button id="downloadBtn" class="btn-ghost">⬇️ Download Page</button>
+      <button id="toggleTheme" class="btn-ghost">☀️</button>
+    </div>
+  </header>
+   <div class="running-text" aria-hidden="false">
+        <div class="inner">🎉 Happy Birthday Rosni 🎉 — Wishing you joy, laughter & love! — 🎉 Happy Birthday Rosni 🎉</div>
+      </div>
+
+
+  <main>
+    <section>
+      <div class="card hero">
+        <div class="image" id="coverInitial" aria-hidden="false">
+          <!-- cover image (if present) will go here; initial overlay shown if no image or as overlay -->
+          <img class="cover-img" src="WhatsApp Image 2025-12-06 at 10.12.06 PM.jpeg" alt="Rosni's cover photo" onerror="this.style.display='none'" />
+        
+        </div>
+        <div class="meta">
+          <h2 style="margin:0"><input id="targetName" placeholder="Rosni" value="Rosni" style="display:inline-block; width:150px; padding:4px 8px; border-radius:6px; font-size:24px; font-weight:700; margin-bottom:6px"/></h2>
+          <textarea id="heroMessage" rows="3" placeholder="Happy Birthday! Yeh page tumhare liye specially banaaya gaya hai. ✨" style="margin-bottom:0; font-size:14px">Happy Birthday! Yeh page tumhare liye specially banaaya gaya hai. ✨</textarea>
+
+          <div class="action-group">
+            <button id="openSlideshow">Play Slideshow</button>
+            <button id="addQuoteBtn" class="btn-ghost">Add Quote</button>
+            <button id="exportBtn" class="btn-ghost">Export Data</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="running-text" aria-hidden="false">
+        <div class="inner">🎉 Happy Birthday Rosni 🎉 — Wishing you joy, laughter & love! — 🎉 Happy Birthday Rosni 🎉</div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <h3 style="margin:0 0 8px 0">Gallery</h3>
+        <div class="gallery-grid" id="gallery" aria-live="polite"></div>
+        
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <h3 style="margin:0 0 8px 0">Quotes for <span class="name-span">Rosni</span></h3>
+        <div class="quotes-list" id="quotesList"></div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <h3 style="margin:0 0 8px 0">Friendship Timeline (Since 2021)</h3>
+        <div class="timeline" id="timeline"></div>
+      </div>
+    </section>
+
+    <aside>
+      <div class="card">
+        <label>Upload photos</label>
+        <div class="uploader-zone" id="uploaderZone">
+          <p>Drag & Drop Photos Here</p>
+          <div style="margin-top:8px">
+            <label class="button" for="photoInput" style="cursor:pointer;padding:8px 12px;border-radius:10px;background:linear-gradient(90deg,#ff9aa2,#ff6b81);color:white; display:inline-block">Or Click to Select</label>
+          </div>
+          <input id="photoInput" type="file" accept="image/*" multiple style="display:none" />
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+            <small style="color:var(--muted)">Photos are saved locally in your browser.</small>
+            <button id="clearGallery" class="btn-ghost" style="padding:4px 8px">Clear All</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <label>Add a quick quote</label>
+        <input id="quickQuote" placeholder="Type a short quote..." />
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="saveQuote">Save Quote</button>
+          <button id="randomQuote" class="btn-ghost">Surprise Me</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <label>Add friendship event</label>
+        <input id="eventYear" placeholder="Year (e.g., 2021)" />
+        <input id="eventText" placeholder="Event description" />
+        <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="addEvent">Add Event</button>
+            <button id="resetEvents" class="btn-ghost">Reset Timeline</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <label>Slideshow settings</label>
+        <div style="display:flex;gap:8px;align-items:center">
+            <label style="font-size:13px;color:var(--muted); margin-bottom:0; flex-shrink:0">Interval (ms)</label>
+            <input id="interval" type="number" value="3000" style="padding:6px;border-radius:6px; margin-bottom:0"/>
+        </div>
+        <div style="margin-top:10px"><button id="playNow">Play Now</button></div>
+      </div>
+
+    </aside>
+  </main>
+
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="viewer card">
+      <div class="row" style="justify-content:space-between; margin-bottom:10px">
+        <div id="modalCounter" style="font-size:14px;color:var(--muted); font-weight:500"></div>
+        <div><button id="closeModal" class="btn-ghost" style="padding:6px 10px; font-size:14px">Close (Esc)</button></div>
+      </div>
+      <img id="modalImg" src="" alt="Slideshow Image"/>
+      <button id="prevBtn" class="nav-btn" style="left:10px">◀</button>
+      <button id="nextBtn" class="nav-btn" style="right:10px">▶</button>
+    </div>
+  </div>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <footer>Made with ❤️ for <span class="name-span">Rosni</span> — edit as you like.</footer>
+
+  <script>
+    // --- Storage Keys & Default Data ---
+    const GALLERY_KEY = 'hbd_gallery_v2';
+    const QUOTES_KEY = 'hbd_quotes_v2';
+    const EVENTS_KEY = 'hbd_events_v2';
+    const NAME_KEY = 'hbd_name_v2';
+    const MESSAGE_KEY = 'hbd_message_v2';
+
+    const defaultQuotes = [
+      "Happy Birthday! Keep shining ✨",
+      "Dosti aur yaadein — dono lajawab. ❤️",
+      "Tumhari muskaan sabse khoobsurat hai.",
+      "Wishing you the best day, filled with joy and laughter.",
+      "To another year of amazing adventures together!"
+    ];
+  const defaultEvents=[
+{year:"2021",text:"Dosti ki shuruaat"},
+{year:"2022",text:"Daily chats aur support"},
+{year:"2023",text:"Distance ke bawajood strong bond"},
+{year:"2024",text:"Trust aur care aur strong"},
+{year:"2025",text:"Same dosti, aur strong 💫"}
+];
+    // --- DOM Elements ---
+    const elements = {
+        galleryEl: document.getElementById('gallery'),
+        photoInput: document.getElementById('photoInput'),
+        clearGallery: document.getElementById('clearGallery'),
+        modal: document.getElementById('modal'),
+        modalImg: document.getElementById('modalImg'),
+        modalCounter: document.getElementById('modalCounter'),
+        openSlideshow: document.getElementById('openSlideshow'),
+        playNow: document.getElementById('playNow'),
+        closeModal: document.getElementById('closeModal'),
+        nextBtn: document.getElementById('nextBtn'),
+        prevBtn: document.getElementById('prevBtn'),
+        intervalInput: document.getElementById('interval'),
+        quotesList: document.getElementById('quotesList'),
+        quickQuoteInput: document.getElementById('quickQuote'),
+        saveQuoteBtn: document.getElementById('saveQuote'),
+        randomQuoteBtn: document.getElementById('randomQuote'),
+        timelineEl: document.getElementById('timeline'),
+        eventYearInput: document.getElementById('eventYear'),
+        eventTextInput: document.getElementById('eventText'),
+        addEventBtn: document.getElementById('addEvent'),
+        resetEventsBtn: document.getElementById('resetEvents'),
+        themeToggle: document.getElementById('toggleTheme'),
+        downloadBtn: document.getElementById('downloadBtn'),
+        exportBtn: document.getElementById('exportBtn'),
+        confettiBtn: document.getElementById('confettiBtn'),
+        uploaderZone: document.getElementById('uploaderZone'),
+        targetNameInput: document.getElementById('targetName'),
+        heroMessageInput: document.getElementById('heroMessage'),
+        pageTitle: document.getElementById('pageTitle'),
+        coverInitial: document.getElementById('coverInitial'),
+        logoInitial: document.getElementById('logoInitial'),
+    };
+
+    // --- State Variables ---
+    let gallery = [];
+    let quotes = [];
+    let events = [];
+    let currentName = "Rosni";
+    let current = 0;
+    let slideIntervalId = null;
+
+    // --- Utilities ---
+    const readJSON = (key, def) => { try { return JSON.parse(localStorage.getItem(key)) || def; } catch (e) { return def; } };
+    const writeJSON = (key, val) => { localStorage.setItem(key, JSON.stringify(val)); };
+    const fileToDataURL = (file) => new Promise(res => { const reader = new FileReader(); reader.onload = e => res(e.target.result); reader.readAsDataURL(file); });
+
+    // --- Core Data Handlers ---
+    function loadData() {
+        gallery = readJSON(GALLERY_KEY, []);
+        quotes = readJSON(QUOTES_KEY, defaultQuotes.slice());
+        events = readJSON(EVENTS_KEY, defaultEvents.slice());
+        currentName = localStorage.getItem(NAME_KEY) || "Rosni";
+        const msg = localStorage.getItem(MESSAGE_KEY);
+
+        if (elements.targetNameInput) elements.targetNameInput.value = currentName;
+        if (msg && elements.heroMessageInput) elements.heroMessageInput.value = msg;
+    }
+
+    function updateName(name) {
+        currentName = (name || 'Rosni').trim();
+        localStorage.setItem(NAME_KEY, currentName);
+        if (elements.targetNameInput) elements.targetNameInput.value = currentName;
+
+        document.title = `Happy Birthday, ${currentName} 🎂`;
+        if (elements.pageTitle) elements.pageTitle.textContent = `Happy Birthday, ${currentName} 🎂`;
+        const initial = currentName.charAt(0).toUpperCase();
+        // Update logo initial (small square)
+        if (elements.logoInitial) elements.logoInitial.textContent = initial;
+        // Update cover overlay initial but DO NOT remove/replace cover image if present
+        const overlay = elements.coverInitial && elements.coverInitial.querySelector('.initial-overlay');
+        if (overlay) overlay.textContent = initial;
+        document.querySelectorAll('.name-span').forEach(el => el.textContent = currentName);
+    }
+
+    function updateMessage(message) {
+        localStorage.setItem(MESSAGE_KEY, message);
+    }
+
+    // --- Gallery Logic ---
+    function renderGallery() {
+      if (!elements.galleryEl) return;
+      if (!gallery || gallery.length === 0) {
+        elements.galleryEl.innerHTML = `<div style="color:var(--muted); text-align:center; padding:20px;">No photos yet. Drag & Drop or click to add some!</div>`;
+        return;
+      }
+
+      elements.galleryEl.innerHTML = gallery.map((src,i)=>`
+        <div class='thumb' data-index='${i}' tabindex='0' role='button' aria-label='Open photo ${i+1}'>
+          <img src='${src}' alt='photo ${i+1}' loading='lazy'/>
+          <button class='del' data-index='${i}' title='Delete photo ${i+1}' aria-label='Delete photo ${i+1}'>&times;</button>
+        </div>
+      `).join('');
+
+      // Attach listeners for opening modal and deleting photos
+      [...elements.galleryEl.querySelectorAll('.thumb')].forEach(t=>{
+        t.addEventListener('click', e=>{
+            if(e.target.closest('.del')) return;
+            const idx=+t.dataset.index;
+            openModal(idx);
+        });
+      });
+      [...elements.galleryEl.querySelectorAll('.del')].forEach(d=>{
+        d.addEventListener('click', e=>{e.stopPropagation(); deletePhoto(+d.dataset.index);});
+      });
+    }
+
+    async function handleFileSelection(files) {
+        const maxTotal = 30;
+        const available = Math.max(0, maxTotal - gallery.length);
+        const filesToProcess = Array.from(files).slice(0, available);
+        if (filesToProcess.length === 0 && files.length > 0) {
+            alert("Gallery is full (max 30 photos).");
+            return;
+        }
+
+        for (const f of filesToProcess) {
+            // Only accept images
+            if (!f.type.startsWith('image/')) continue;
+            try {
+              const data = await fileToDataURL(f);
+              gallery.push(data);
+            } catch (err) {
+              console.warn('Failed to read file', f.name, err);
+            }
+        }
+        writeJSON(GALLERY_KEY, gallery);
+        renderGallery();
+        if (elements.photoInput) elements.photoInput.value = null; // Clear input
+    }
+
+    function deletePhoto(index) {
+        if(confirm('Delete this photo?')) {
+            gallery.splice(index, 1);
+            writeJSON(GALLERY_KEY, gallery);
+            renderGallery();
+        }
+    }
+
+    // --- Modal / Slideshow Logic ---
+    function openModal(index = 0) {
+        if(!gallery.length) return alert('Gallery is empty. Please add photos first.');
+        current = Math.max(0, Math.min(index, gallery.length - 1));
+        if (elements.modal) elements.modal.classList.add('open');
+        updateModal();
+    }
+    function closeModal() {
+        if (elements.modal) elements.modal.classList.remove('open');
+        stopSlideshow();
+    }
+    function updateModal() {
+        if (elements.modalImg) elements.modalImg.src = gallery[current] || '';
+        if (elements.modalCounter) elements.modalCounter.textContent = `${current + 1} / ${gallery.length}`;
+    }
+    function next() {
+        if (!gallery.length) return;
+        current = (current + 1) % gallery.length;
+        updateModal();
+    }
+    function prev() {
+        if (!gallery.length) return;
+        current = (current - 1 + gallery.length) % gallery.length;
+        updateModal();
+    }
+
+    function startSlideshow() {
+      const interval = Math.max(500, Number((elements.intervalInput && elements.intervalInput.value) || 3000));
+      stopSlideshow();
+      slideIntervalId = setInterval(next, interval);
+    }
+    function stopSlideshow() {
+        if(slideIntervalId) clearInterval(slideIntervalId);
+        slideIntervalId = null;
+    }
+
+    // --- Quotes Logic ---
+    function renderQuotes() {
+        if (!elements.quotesList) return;
+        if (!quotes || quotes.length === 0) {
+          elements.quotesList.innerHTML = '<div style="color:var(--muted); text-align:center; padding:10px;">No quotes yet. Add one!</div>';
+          return;
+        }
+        elements.quotesList.innerHTML = quotes.map((q,i)=>`
+            <div class='quote'>
+                <div style='display:flex;justify-content:space-between;align-items:center'>
+                    <div class="quote-content">${escapeHtml(q)}</div>
+                    <div><button data-i='${i}' class='delq btn-ghost' style="padding:4px 8px">Delete</button></div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addQuote(text) {
+        const v = (text || '').trim();
+        if(!v) return alert('Please type a quote.');
+        quotes.unshift(v);
+        writeJSON(QUOTES_KEY, quotes);
+        if (elements.quickQuoteInput) elements.quickQuoteInput.value = '';
+        renderQuotes();
+    }
+
+    // --- Events / Timeline Logic ---
+    function renderEvents() {
+        if (!elements.timelineEl) return;
+        if (!events || events.length === 0) {
+          elements.timelineEl.innerHTML = '<div style="color:var(--muted); text-align:center; padding:10px;">No events yet. Add one!</div>';
+          return;
+        }
+        elements.timelineEl.innerHTML = events.map((ev,i)=>`
+            <div class='event'>
+                <div>
+                    <strong>${escapeHtml(ev.year)}</strong>
+                    <div class='text-muted'>${escapeHtml(ev.text)}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addEvent() {
+        const year = (elements.eventYearInput && elements.eventYearInput.value.trim()) || String(new Date().getFullYear());
+        const text = (elements.eventTextInput && elements.eventTextInput.value.trim()) || '';
+        if(!text) return alert('Please write an event description.');
+        events.unshift({year: year, text: text});
+        events.sort((a,b) => parseInt(b.year) - parseInt(a.year));
+        writeJSON(EVENTS_KEY, events);
+        if (elements.eventYearInput) elements.eventYearInput.value = '';
+        if (elements.eventTextInput) elements.eventTextInput.value = '';
+        renderEvents();
+    }
+
+    // --- Confetti Feature ---
+    function fireConfetti() {
+        try {
+          confetti({ particleCount: 160, spread: 110, origin: { y: 0.6 } });
+          // show canvas briefly
+          const c = document.getElementById('confettiCanvas');
+          if (c) { c.style.display = 'block'; setTimeout(()=>{ c.style.display='none'; }, 1200); }
+        } catch (e) {
+          alert('Confetti not available in this environment.');
+        }
+    }
+
+    // --- Safety helper: simple escaping for inserted text ---
+    function escapeHtml(unsafe) {
+      return String(unsafe)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // --- Initialization & Event Listeners ---
+    function init() {
+        loadData();
+        updateName(currentName);
+
+        renderGallery();
+        renderQuotes();
+        renderEvents();
+
+        // Dynamic Name Input
+        if (elements.targetNameInput) elements.targetNameInput.addEventListener('input', e => updateName(e.target.value));
+        if (elements.heroMessageInput) elements.heroMessageInput.addEventListener('input', e => updateMessage(e.target.value));
+
+        // Gallery Listeners
+        if (elements.photoInput) elements.photoInput.addEventListener('change', (ev) => handleFileSelection(ev.target.files));
+        if (elements.clearGallery) elements.clearGallery.addEventListener('click', () => { if(confirm('Clear ALL photos?')) { gallery=[]; writeJSON(GALLERY_KEY,gallery); renderGallery(); } });
+
+        // Drag & Drop Listeners (uploader zone only)
+        if (elements.uploaderZone) {
+          elements.uploaderZone.addEventListener('dragover', (e) => { e.preventDefault(); elements.uploaderZone.classList.add('drag-over'); });
+          elements.uploaderZone.addEventListener('dragleave', () => elements.uploaderZone.classList.remove('drag-over'));
+          elements.uploaderZone.addEventListener('drop', (e) => {
+              e.preventDefault();
+              elements.uploaderZone.classList.remove('drag-over');
+              handleFileSelection(e.dataTransfer.files);
+          });
+        }
+
+        // Modal/Slideshow Listeners
+        if (elements.openSlideshow) elements.openSlideshow.addEventListener('click', () => { openModal(0); startSlideshow(); });
+        if (elements.playNow) elements.playNow.addEventListener('click', () => { openModal(0); startSlideshow(); });
+        if (elements.closeModal) elements.closeModal.addEventListener('click', closeModal);
+        if (elements.nextBtn) elements.nextBtn.addEventListener('click', next);
+        if (elements.prevBtn) elements.prevBtn.addEventListener('click', prev);
+
+        // Keyboard navigation for modal
+        document.addEventListener('keydown', e => {
+            if(elements.modal && elements.modal.classList.contains('open')) {
+                if(e.key === 'Escape') closeModal();
+                if(e.key === 'ArrowRight') next();
+                if(e.key === 'ArrowLeft') prev();
+            }
+        });
+
+        // Quotes Listeners
+        if (elements.saveQuoteBtn) elements.saveQuoteBtn.addEventListener('click', () => addQuote((elements.quickQuoteInput && elements.quickQuoteInput.value) || ''));
+        if (elements.randomQuoteBtn) elements.randomQuoteBtn.addEventListener('click', () => addQuote(defaultQuotes[Math.floor(Math.random()*defaultQuotes.length)]));
+        if (elements.quotesList) elements.quotesList.addEventListener('click', e=>{
+            const b = e.target.closest('.delq');
+            if(!b) return;
+            const i=+b.dataset.i;
+            if(confirm('Delete quote?')){
+                quotes.splice(i,1);
+                writeJSON(QUOTES_KEY,quotes);
+                renderQuotes();
+            }
+        });
+
+        // Events Listeners
+        if (elements.addEventBtn) elements.addEventBtn.addEventListener('click', addEvent);
+        if (elements.resetEventsBtn) elements.resetEventsBtn.addEventListener('click', () => {
+            if(confirm('Reset timeline to defaults?')) {
+                events = defaultEvents.slice();
+                writeJSON(EVENTS_KEY,events);
+                renderEvents();
+            }
+        });
+
+        // Theme Toggle
+        if (elements.themeToggle) elements.themeToggle.addEventListener('click', ()=>{
+            const root = document.body;
+            const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            root.setAttribute('data-theme', next);
+            // show the icon for the theme you'll switch to when pressing the button
+            elements.themeToggle.textContent = next === 'light' ? '🌙' : '☀️';
+        });
+
+        // Export/Download
+        if (elements.downloadBtn) elements.downloadBtn.addEventListener('click', ()=>{
+          const html = `<!doctype html>${document.documentElement.outerHTML}`;
+          const blob = new Blob([html],{type:'text/html'});
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href=url; a.download=`${currentName.replace(/\s/g, '_')}_Birthday_Page.html`; a.click(); URL.revokeObjectURL(url);
+        });
+        if (elements.exportBtn) elements.exportBtn.addEventListener('click', ()=>{
+          const data = {name: currentName, message: (elements.heroMessageInput && elements.heroMessageInput.value) || '', gallery, quotes, events};
+          const blob = new Blob([JSON.stringify(data, null, 2)],{type:'application/json'});
+          const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`${currentName.replace(/\s/g, '_')}_data.json`; a.click(); URL.revokeObjectURL(url);
+        });
+
+        // Confetti
+        if (elements.confettiBtn) elements.confettiBtn.addEventListener('click', fireConfetti);
+
+        // Import Data by Drop (only when dropping a JSON file onto the document while holding ctrl/meta) to avoid accidental imports
+        document.body.addEventListener('dragover', e => { e.preventDefault(); });
+        document.body.addEventListener('drop', e => {
+            e.preventDefault();
+            // require ctrlKey or metaKey to import to avoid interfering with photo drops
+            if (!(e.ctrlKey || e.metaKey)) return;
+            const f = e.dataTransfer.files[0];
+            if(!f || !f.name.endsWith('.json')) return alert('Drop a previously exported JSON file (hold Ctrl or ⌘ while dropping).');
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    const d = JSON.parse(ev.target.result);
+                    if(d.name) updateName(d.name);
+                    if(d.message && elements.heroMessageInput) { elements.heroMessageInput.value = d.message; updateMessage(d.message); }
+                    if(d.gallery) { gallery=d.gallery; writeJSON(GALLERY_KEY,gallery);} 
+                    if(d.quotes){ quotes=d.quotes; writeJSON(QUOTES_KEY,quotes);} 
+                    if(d.events){ events=d.events; writeJSON(EVENTS_KEY,events);} 
+                    renderGallery(); renderQuotes(); renderEvents(); alert('Data imported successfully!');
+                } catch(err) {
+                    alert('Invalid file format or corrupted data.');
+                }
+            };
+            reader.readAsText(f);
+        });
+
+        // Save before unload
+        window.addEventListener('beforeunload', () => {
+            writeJSON(GALLERY_KEY,gallery);
+            writeJSON(QUOTES_KEY,quotes);
+            writeJSON(EVENTS_KEY,events);
+            if (elements.targetNameInput) localStorage.setItem(NAME_KEY, elements.targetNameInput.value);
+            if (elements.heroMessageInput) localStorage.setItem(MESSAGE_KEY, elements.heroMessageInput.value);
+        });
+    }
+
+    init();
+  </script>
+</body>
+</html>
